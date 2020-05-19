@@ -62,6 +62,9 @@ switch ($app['params']->parameterByKey('storage_system')) {
     case 's3':
         $app->register(new \Core\StorageProvider\S3StorageProvider());
         break;
+    case 'local_hashed':
+        $app->register(new \Core\StorageProvider\LocalHashedStorageProvider());
+        break;
     case 'local':
     default:
         $app->register(new \Core\StorageProvider\LocalStorageProvider());

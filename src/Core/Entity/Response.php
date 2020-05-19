@@ -2,6 +2,7 @@
 
 namespace Core\Entity;
 
+use Closure;
 use Core\Entity\Image\OutputImage;
 use Core\Handler\ImageHandler;
 use Symfony\Component\HttpFoundation\Response as BaseResponse;
@@ -14,7 +15,7 @@ class Response extends BaseResponse
 {
     /** @var ImageHandler */
     protected $imageHandler;
-    /** @var string */
+    /** @var Closure|string */
     protected $filePathResolver;
     /** @var int */
     protected $maxAge;
@@ -95,7 +96,10 @@ class Response extends BaseResponse
     public function generatePathResponse(OutputImage $image): void
     {
         $imagePath = $image->getOutputImageName();
-        $imagePath = sprintf($this->filePathResolver, $imagePath);
+        $imagePath = (is_callable($this->filePathResolver))
+            ? $this->filePathResolver->call($this, $imagePath)
+            : sprintf($this->filePathResolver, $imagePath);
+            ;
         $this->setContent($imagePath);
         $image->removeOutputImage();
     }
